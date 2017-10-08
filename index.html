@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>d-Rail</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <style>
+  html,body {height:100%;}
+  .jumbotron {
+    color: #0e0909;
+    padding: 100px 25px;
+	height: 100vh;
+}
+.table td {
+   text-align: center;   
+}
+.table th {
+   text-align: center;   
+}
+  .navbar {
+    margin-bottom: 0;
+    background-color: #f4511e;
+    z-index: 9999;
+    border: 0;
+    font-size: 12px !important;
+    line-height: 1.42857143 !important;
+    letter-spacing: 4px;
+    border-radius: 0;
+}
+
+.navbar li a, .navbar .navbar-brand {
+    color: #fff !important;
+}
+
+.navbar-nav li a:hover, .navbar-nav li.active a {
+    color: #f4511e !important;
+    background-color: #fff !important;
+}
+
+.navbar-default .navbar-toggle {
+    border-color: transparent;
+    color: #fff !important;
+}
+  </style>
+</head>
+<body>
+<!-- <nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span> 
+      </button>
+      <a class="navbar-brand" href="#">d-Rail</a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#pnrstatus">Get PNR Status</a></li>
+        <li><a href="#contact">CONTACT</a></li>
+      </ul>
+    </div>
+  </div>
+</nav> -->
+<div class="jumbotron text-center">
+  <h1>d-Rail</h1> 
+  <p>No More Signing in problem, Just give your PNR and get your status</p> 
+  <form class="form-inline">
+    <div class="input-group">
+      <input type="text" class="form-control" id="pnr" size="50" placeholder="PNR Number" required>
+      <div class="input-group-btn">
+        <button type="button" id="getstatus" class="btn btn-danger">Get Status</button>
+      </div>
+    </div>
+	<span class="errmsg"></span>
+  </form>
+  <br>
+  <br>
+  <br>
+  <div class="container" id="pnrdata" style="display:none">
+   <table class="table table-bordered table-responsive table-hover">
+    <thead>
+      <tr>
+        <th>From</th>
+        <th>To</th>
+        <th>Date Of Boarding</th>
+		<th>Train Name</th>
+		<th>Train Number</th>
+		<th>Chart Prepared</th>
+		<th>Booking Status</th>
+		<th>Current Status</th>
+      </tr>
+    </thead>
+    <tbody id="insertData">
+    </tbody>
+  </table>
+  </div>
+</div>
+</body>
+<script>
+$("#getstatus").on("click",function(){
+var data = {};
+					data.pnr = $("#pnr").val();
+				console.log(data);	
+$.ajax({
+						type: 'POST',
+						data: JSON.stringify(data),
+				        contentType: 'application/json',
+                        //url: 'https://d-rail.herokuapp.com/pnrstatus',						
+						url:'/pnrstatus',
+                        success: function(data) {
+                            console.log('success');
+                            console.log(data);
+							$("#pnrdata").attr("style","display:block");
+							$("#insertData").html("");
+							/* var jsonData ='{"from":"CHENNAI CENTRAL","to":"SALEM JN","date of boarding":"29-12-2017","train":"NILAGIRI EXP","no":"12671","chart prepared":"false","booking_status":"CNF/S10/21/GN~CNF/S10/24/GN~CNF/S10/18/GN~CNF/S10/23/GN","current_status":"CNF/-/0/GN~CNF/-/0/GN~CNF/-/0/GN~CNF/-/0/GN"}';*/
+							var jsonData = data;
+					var jsonObj = JSON.parse(jsonData);
+					var from = jsonObj.from;
+					var to = jsonObj.to;
+					var doj = jsonObj['date of boarding'];
+					var trainName = jsonObj.train;
+					var trainNo = jsonObj.no;
+					var chart = jsonObj['chart prepared'];
+					var bookingstatus = jsonObj.booking_status;
+					var current_status = jsonObj.current_status;
+					var bookingArr = bookingstatus.split("~");
+					var currentArr = current_status.split("~");
+					if(bookingArr.length>0){
+					for(var i=0;i<bookingArr.length;i++){
+					var tags='<tr>';
+					tags+='<td>'+from+'</td>';
+					tags+='<td>'+to+'</td>';
+					tags+='<td>'+doj+'</td>';
+					tags+='<td>'+trainName+'</td>';
+					tags+='<td>'+trainNo+'</td>';
+					tags+='<td>'+chart+'</td>';
+					tags+='<td>'+bookingArr[i]+'</td>';
+					tags+='<td>'+currentArr[i]+'</td>';
+					tags+='</tr>';
+					$("#insertData").append(tags);
+					}
+					}
+                        }
+                    });
+					
+					
+					
+})
+
+</script>
+</html>
