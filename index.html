@@ -9,11 +9,7 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <style>
   html,body {height:100%;}
-  .jumbotron {
-    color: #0e0909;
-    padding: 100px 25px;
-	height: 100vh;
-}
+
 .table td {
    text-align: center;   
 }
@@ -44,6 +40,9 @@
     border-color: transparent;
     color: #fff !important;
 }
+.errmsg{
+color: #D8000C;
+}
   </style>
 </head>
 <body>
@@ -65,7 +64,7 @@
     </div>
   </div>
 </nav> -->
-<div class="jumbotron text-center">
+<div class="container text-center" style="padding-top: 8%;">
   <h1>d-Rail</h1> 
   <p>No More Signing in problem, Just give your PNR and get your status</p> 
   <form class="form-inline">
@@ -75,6 +74,7 @@
         <button type="button" id="getstatus" class="btn btn-danger">Get Status</button>
       </div>
     </div>
+	<br>
 	<span class="errmsg"></span>
   </form>
   <br>
@@ -102,10 +102,15 @@
 </body>
 <script>
 $("#getstatus").on("click",function(){
-var data = {};
+$(".errmsg").html("");
+				if($("#pnr").val()!=null && $("#pnr").val()!='' && $("#pnr").val()!=undefined && $("#pnr").val()!='undefined'){
+				alert($("#pnr").val().length);
+				if($("#pnr").val().length==10){
+				
+				var data = {};
 					data.pnr = $("#pnr").val();
 				console.log(data);	
-$.ajax({
+				$.ajax({
 						type: 'POST',
 						data: JSON.stringify(data),
 				        contentType: 'application/json',
@@ -146,6 +151,17 @@ $.ajax({
 					}
                         }
                     });
+				}else{
+				$(".errmsg").html("Kindly Give Valid PNR");
+				}
+				
+				
+				}else{
+					
+					$(".errmsg").html("Kindly Give Valid PNR");
+				
+				}
+
 					
 					
 					
